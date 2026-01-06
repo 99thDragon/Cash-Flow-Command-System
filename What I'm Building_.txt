@@ -1,0 +1,204 @@
+﻿FINAL SCOPED SOLUTION
+"Cash Flow Command System" - Tracks the 3 critical workflows that make or break small business cash flow while documenting processes
+________________
+
+
+WHAT I'M BUILDING:
+Three Core Workflows:
+1. Sale → Invoice → Payment (Accounts Receivable)
+* Track invoice status (sent, viewed, paid, overdue)
+* Automated payment reminders (3, 7, 14 days)
+* Aging report (current, 30, 60, 90+ days)
+* Customer payment patterns
+2. Purchase → Bill → Payment (Accounts Payable)
+* Track bills due
+* Payment schedule planning
+* Vendor payment tracking
+* Cash outflow forecast
+3. Cash Position → Decision Making
+* Current cash balance
+* 4-week rolling forecast (in vs. out)
+* Runway calculator ("weeks until $0")
+* "Can we afford X?" decision tool
+________________
+
+
+FEATURES I WILL BUILD:
+Dashboard View:
+✅ Current cash position (today's number) ✅ Money coming in next 30 days (AR) ✅ Money going out next 30 days (AP) ✅ Net cash forecast by week (4 weeks) ✅ Alert flags (overdue invoices, bills due soon, low runway)
+Accounts Receivable Module:
+✅ Invoice list with status ✅ Days outstanding for each invoice ✅ Auto-reminder email templates ✅ "Send reminder" button ✅ Payment received logging
+Accounts Payable Module:
+✅ Bill list with due dates ✅ Payment priority ranking ✅ "Schedule payment" function ✅ Vendor payment history
+Process Documentation (Built-In):
+✅ Step-by-step workflow for each process ✅ Checklist format embedded in tool ✅ "How to" guide for team members ✅ Responsibility assignments (who does what)
+________________
+
+
+FEATURES I WILL NOT BUILD:
+❌ Accounting software integration (manual input for now) ❌ Mobile app ❌ Multi-user permissions/roles ❌ Reporting/analytics beyond basic dashboard ❌ Customer portal ❌ Payment processing integration ❌ Inventory tracking ❌ Payroll management ❌ Tax calculations ❌ Historical data analysis (focus on forward-looking)
+________________
+
+
+3-SESSION BUILD PLAN:
+Session 1: Structure + AR Workflow (3 hours)
+Hour 1: Setup + Design
+* Choose platform (Google Sheets + Apps Script OR Airtable)
+* Create database structure (invoices, bills, cash entries)
+* Design dashboard layout
+Hour 2: Build AR Tracker
+* Invoice entry form
+* Status tracking (sent/paid/overdue)
+* Aging calculation (days outstanding)
+* Basic aging report view
+Hour 3: Document AR Process
+* Write step-by-step invoice-to-payment workflow
+* Create reminder email templates
+* Build "when to follow up" checklist
+* Embed process into tool (help text/instructions)
+Deliverable: Working AR tracker with process documented
+________________
+
+
+Session 2: AP Workflow + Cash Dashboard (3 hours)
+Hour 1: Build AP Tracker
+* Bill entry form
+* Due date tracking
+* Payment schedule view
+* "Bills due this week" alert
+Hour 2: Cash Position Dashboard
+* Current cash balance entry
+* Calculate total AR (money coming in)
+* Calculate total AP (money going out)
+* Net position calculation
+* 4-week forecast view
+Hour 3: Document AP Process
+* Write bill-to-payment workflow
+* Create payment prioritization rules
+* Build "when to pay" decision tree
+* Embed in tool
+Deliverable: Complete cash visibility system with both workflows
+________________
+
+
+Session 3: Automation + Polish (3 hours)
+Hour 1: Build Automation
+* Automated reminder emails (using Apps Script or Zapier)
+* Due date alerts
+* Low cash runway warnings
+* Weekly summary email
+Hour 2: Create Decision Tool
+* "Can we afford X?" calculator
+* Scenario modeling (what if we spend $Y?)
+* Impact on runway calculation
+* Quick reference guide
+Hour 3: Training + Launch
+* Create user guide
+* Train on data entry
+* Set up weekly review rhythm
+* First live data entry session
+* Establish maintenance process (who updates when)
+Deliverable: Fully functional system ready for daily use
+________________
+
+
+TECHNICAL APPROACH:
+Option A: Google Sheets + Apps Script (Recommended)
+Pros: Free, familiar, easy to customize, no learning curve Cons: Less polished UI, manual updates needed
+Option B: Airtable
+Pros: Better UI, forms built-in, easier automation Cons: $20/month cost, learning curve
+Recommendation: Start with Google Sheets - can migrate to Airtable later if needed
+________________
+
+
+DATA REQUIREMENTS (Minimal):
+To Track:
+* Invoice #, customer name, amount, date sent, due date, status
+* Bill #, vendor name, amount, due date, status
+* Current cash balance
+* That's it - keep it simple
+Update Frequency:
+* AR: Daily (when invoices sent/payments received)
+* AP: Weekly (when bills come in)
+* Cash balance: Daily (or weekly minimum)
+* Forecast: Updates automatically based on AR/AP
+________________
+
+
+SUCCESS METRICS:
+Week 1:
+* All current invoices entered
+* All current bills entered
+* First cash forecast generated
+* Team trained on basic use
+Week 4:
+* AR collection time reduced by 7 days
+* Zero "surprise" cash crunches
+* 100% bills paid on time (no late fees)
+* Accurate 4-week cash forecast
+Week 12:
+* AR collection time reduced by 15 days
+* Cash runway always visible
+* Documented processes followed 90% of time
+* New team members can use system independently
+________________
+
+
+PROCESS DOCUMENTATION EMBEDDED:
+Each module includes:
+AR Process Checklist:
+1. Create invoice same day as sale
+2. Send invoice within 24 hours
+3. Log in tracker immediately
+4. Set reminder for day 3
+5. Follow up at 3, 7, 14 days if unpaid
+6. Escalate at 30 days
+AP Process Checklist:
+1. Enter bill in tracker when received
+2. Verify against PO/receipt
+3. Schedule payment for 3 days before due
+4. Check cash position before scheduling
+5. Mark paid and log date
+Cash Decision Process:
+1. Check current cash balance
+2. Review forecast (next 4 weeks)
+3. Calculate impact of expense
+4. Check runway after expense
+5. Decide: Yes (runway >4 weeks) / Maybe (2-4 weeks) / No (<2 weeks)
+________________
+
+
+SAMPLE DASHBOARD VIEW:
+
+
+
+
+│ CASH FLOW COMMAND CENTER │ ├─────────────────────────────────────────────┤ │ Current Cash: $12,450 Runway: 6 weeks│ │ │ │ NEXT 4 WEEKS FORECAST: │ │ Week 1: +$3,200 (In: $8,500 | Out: $5,300) │ │ Week 2: -$1,800 (In: $2,000 | Out: $3,800) │ │ Week 3: +$4,100 (In: $6,500 | Out: $2,400) │ │ Week 4: -$900 (In: $1,200 | Out: $2,100) │ │ │ │ ⚠️ ALERTS: │ │ • 3 invoices overdue (total: $4,200) │ │ • 2 bills due this week (total: $1,850) │ │ │ │ QUICK ACTIONS: │ │ [Send Reminders] [Log Payment] [Add Bill]
+
+DELIVERABLES:
+1. Working Google Sheet with 4 tabs:
+   * Dashboard
+   * Accounts Receivable
+   * Accounts Payable
+   * Process Guide
+2. Automated reminders (email)
+3. Process documentation (embedded in tool)
+4. Training guide (one-pager)
+5. Weekly review template (15-min routine)
+________________
+
+
+POST-BUILD: SUSTAINABILITY
+Daily routine (5 minutes):
+* Log any payments received
+* Enter new invoices
+* Check alerts
+Weekly routine (15 minutes):
+* Review AR aging
+* Schedule AP payments
+* Update cash balance
+* Review 4-week forecast
+Monthly routine (30 minutes):
+* Analyze trends
+* Update process docs based on learnings
+* Optimize reminder timing

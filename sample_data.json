@@ -1,0 +1,127 @@
+{
+  "cashBalance": 24500,
+  "invoices": [
+    {
+      "id": "INV-2024-001",
+      "client": "Acme Corporation",
+      "amount": 12500,
+      "dateSent": "2024-12-15",
+      "dueDate": "2025-01-15",
+      "status": "Sent"
+    },
+    {
+      "id": "INV-2024-002",
+      "client": "TechStart Industries",
+      "amount": 8750,
+      "dateSent": "2024-12-20",
+      "dueDate": "2025-01-20",
+      "status": "Sent"
+    },
+    {
+      "id": "INV-2024-003",
+      "client": "Global Logistics LLC",
+      "amount": 15000,
+      "dateSent": "2024-11-30",
+      "dueDate": "2024-12-30",
+      "status": "Overdue"
+    },
+    {
+      "id": "INV-2024-004",
+      "client": "Metro Consulting Group",
+      "amount": 6200,
+      "dateSent": "2025-01-02",
+      "dueDate": "2025-02-01",
+      "status": "Sent"
+    },
+    {
+      "id": "INV-2024-005",
+      "client": "Sunrise Ventures",
+      "amount": 9800,
+      "dateSent": "2024-12-01",
+      "dueDate": "2025-01-01",
+      "status": "Overdue"
+    },
+    {
+      "id": "INV-2023-089",
+      "client": "Pacific Retail Co",
+      "amount": 4500,
+      "dateSent": "2024-12-10",
+      "dueDate": "2025-01-10",
+      "status": "Paid"
+    },
+    {
+      "id": "INV-2024-006",
+      "client": "Digital Marketing Pro",
+      "amount": 3750,
+      "dateSent": "2025-01-05",
+      "dueDate": "2025-02-05",
+      "status": "Sent"
+    }
+  ],
+  "bills": [
+    {
+      "id": "BILL-2025-001",
+      "vendor": "AWS Cloud Services",
+      "amount": 1250,
+      "dueDate": "2025-01-15",
+      "priority": "High",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2025-002",
+      "vendor": "Office Rent - Downtown Plaza",
+      "amount": 3500,
+      "dueDate": "2025-01-01",
+      "priority": "High",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2025-003",
+      "vendor": "Internet & Phone - Verizon",
+      "amount": 450,
+      "dueDate": "2025-01-20",
+      "priority": "Medium",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2025-004",
+      "vendor": "Software Licenses - Adobe",
+      "amount": 680,
+      "dueDate": "2025-01-25",
+      "priority": "Medium",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2025-005",
+      "vendor": "Marketing - Google Ads",
+      "amount": 2200,
+      "dueDate": "2025-01-10",
+      "priority": "High",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2024-089",
+      "vendor": "Utilities - Electric",
+      "amount": 320,
+      "dueDate": "2024-12-28",
+      "priority": "Low",
+      "status": "Paid"
+    },
+    {
+      "id": "BILL-2025-006",
+      "vendor": "Insurance - Business Policy",
+      "amount": 1850,
+      "dueDate": "2025-02-01",
+      "priority": "High",
+      "status": "Unpaid"
+    },
+    {
+      "id": "BILL-2025-007",
+      "vendor": "Supplies - Office Depot",
+      "amount": 275,
+      "dueDate": "2025-01-18",
+      "priority": "Low",
+      "status": "Unpaid"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+    "cashBalance": 10000,
+    "invoices": [
+        {
+            "id": "INV-001",
+            "client": "Test Client A",
+            "amount": 5000,
+            "dateSent": "2025-01-01",
+            "dueDate": "2025-01-31",
+            "status": "Sent"
+        },
+        {
+            "id": "INV-002",
+            "client": "Test Client B",
+            "amount": 3000,
+            "dateSent": "2024-12-15",
+            "dueDate": "2025-01-15",
+            "status": "Overdue"
+        }
+    ],
+    "bills": [
+        {
+            "id": "BILL-001",
+            "vendor": "Test Vendor A",
+            "amount": 1500,
+            "dueDate": "2025-01-20",
+            "priority": "High",
+            "status": "Unpaid"
+        },
+        {
+            "id": "BILL-002",
+            "vendor": "Test Vendor B",
+            "amount": 800,
+            "dueDate": "2025-02-01",
+            "priority": "Medium",
+            "status": "Unpaid"
+        }
+    ]
+}

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Command System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div>
+            <div class="brand">
+                <span>⚡</span> CashFlowCmd
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active" onclick="app.navigate('dashboard')">
+                    <span>📊</span> Dashboard
+                </li>
+                <li class="nav-item" onclick="app.navigate('receivables')">
+                    <span>💰</span> Accounts Receivable
+                </li>
+                <li class="nav-item" onclick="app.navigate('payables')">
+                    <span>💸</span> Accounts Payable
+                </li>
+                <li class="nav-item" onclick="app.navigate('review')">
+                    <span>🔄</span> Weekly Review
+                </li>
+                <li class="nav-item" onclick="app.navigate('templates')">
+                    <span>📋</span> Templates
+                </li>
+                <li class="nav-item" onclick="app.navigate('docs')">
+                    <span>📘</span> Process Docs
+                </li>
+            </ul>
+        </div>
+        <div>
+            <button class="btn"
+                style="width: 100%; margin-bottom: 1rem; background: rgba(99, 102, 241, 0.1); color: white; border: 1px solid rgba(99, 102, 241, 0.3);"
+                onclick="app.toggleTheme()">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+            </button>
+            <div style="font-size: 0.75rem; color: #6b7280; margin-top: auto;">
+                v1.1.0 (Pro)
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="view-section">
+            <div class="header">
+                <div class="title-section">
+                    <h1>Command Center</h1>
+                    <p>Real-time cash position and 4-week forecast</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn"
+                        style="background: var(--surface); border: 1px solid var(--border); color: var(--text-main);"
+                        onclick="app.exportData()">⬇️ Export Data</button>
+                    <button class="btn"
+                        style="background: var(--surface); border: 1px solid var(--border); color: var(--text-main);"
+                        onclick="document.getElementById('file-import').click()">⬆️ Import Data</button>
+                    <button class="btn"
+                        style="background: var(--surface); border: 1px solid var(--border); color: var(--text-main);"
+                        onclick="document.getElementById('csv-import').click()">📄 Import CSV</button>
+                    <input type="file" id="file-import" class="hidden" accept=".json" onchange="app.importData(this)">
+                    <input type="file" id="csv-import" class="hidden" accept=".csv" onchange="app.importCSV(this)">
+                    <button class="btn btn-primary" onclick="app.openModal('add-transaction')">+ Quick Action</button>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div id="dashboard-alerts" class="hidden" style="margin-bottom: 2rem;">
+                <div class="card" style="border-left: 4px solid var(--danger); background: #fff1f2;">
+                    <div class="flex-between">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span style="font-size: 1.5rem;">⚠️</span>
+                            <div>
+                                <h3 style="color: var(--danger);">Action Required</h3>
+                                <p id="alert-message" style="color: var(--text-main); font-size: 0.9rem;">You have
+                                    overdue invoices.</p>
+                            </div>
+                        </div>
+                        <button class="btn"
+                            style="background: white; border: 1px solid var(--danger); color: var(--danger)"
+                            onclick="app.navigate('receivables')">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="flex-between">
+                        <div class="card-title">Current Cash</div>
+                        <button class="btn btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;"
+                            onclick="app.openModal('edit-cash')">Edit</button>
+                    </div>
+                    <div class="card-value" id="kpi-cash">$0.00</div>
+                    <div class="trend-up">Safe Runway</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Coming In (30 Days)</div>
+                    <div class="card-value" id="kpi-in">$0.00</div>
+                    <div class="trend-up">AR Forecast</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Going Out (30 Days)</div>
+                    <div class="card-value" id="kpi-out">$0.00</div>
+                    <div class="trend-down">AP Forecast</div>
+                </div>
+                <div class="card" style="cursor: pointer; border: 2px solid var(--primary);"
+                    onclick="app.openModal('decision')">
+                    <div class="card-title" style="color: var(--primary);">Decision Tool</div>
+                    <div class="card-value" id="kpi-runway">∞ Weeks</div>
+                    <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Tap to Simulate (+/-)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash Flow Trend Chart -->
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 1rem;">
+                    <h3>Cash Flow Trend</h3>
+                    <span class="badge badge-pending">Last 8 Weeks</span>
+                </div>
+                <canvas id="cashflow-chart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- Forecast Table -->
+            <div class="card">
+                <div class="flex-between" style="margin-bottom: 1rem;">
+                    <h3>12-Week Cash Forecast</h3>
+                    <span class="badge badge-pending">Extended Projection</span>
+                </div>
+                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Money In</th>
+                                <th>Money Out</th>
+                                <th>Net Change</th>
+                                <th>End Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forecast-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCOUNTS RECEIVABLE VIEW -->
+        <div id="view-receivables" class="view-section hidden">
+            <div class="header">
+                <div>
+                    <h1>Accounts Receivable</h1>
+                    <p>Track invoices, payments, and aging.</p>
+                </div>
+                <button class="btn btn-primary" onclick="app.openModal('add-invoice')">+ New Invoice</button>
+            </div>
+
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Client</th>
+                                <th>Date Sent</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ar-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCOUNTS PAYABLE VIEW -->
+        <div id="view-payables" class="view-section hidden">
+            <div class="header">
+                <div>
+                    <h1>Accounts Payable</h1>
+                    <p>Manage bills, vendors, and payment schedules.</p>
+                </div>
+                <button class="btn btn-primary" onclick="app.openModal('add-bill')">+ Add Bill</button>
+            </div>
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bill #</th>
+                                <th>Vendor</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ap-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEMPLATES VIEW -->
+        <div id="view-templates" class="view-section hidden">
+            <div class="header">
+                <div class="title-section">
+                    <h1>Recurring Templates</h1>
+                    <p>Automate recurring invoices and bills</p>
+                </div>
+                <button class="btn btn-primary" onclick="app.openModal('add-template')">+ New Template</button>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Invoice Templates -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">📥 Recurring Invoices</h3>
+                    <div id="invoice-templates-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Bill Templates -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">📤 Recurring Bills</h3>
+                    <div id="bill-templates-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEKLY REVIEW VIEW -->
+        <div id="view-review" class="view-section hidden">
+            <div class="header">
+                <div class="title-section">
+                    <h1>Weekly Review</h1>
+                    <p>15-minute routine to secure your cash flow.</p>
+                </div>
+            </div>
+
+            <div class="wizard-container">
+                <div class="wizard-progress">
+                    <div class="progress-step active" id="step-ind-1">1</div>
+                    <div class="progress-step" id="step-ind-2">2</div>
+                    <div class="progress-step" id="step-ind-3">3</div>
+                    <div class="progress-step" id="step-ind-4">4</div>
+                </div>
+
+                <!-- STEP 1: Verify Cash -->
+                <div id="step-1" class="wizard-step active">
+                    <div class="wizard-content">
+                        <span style="font-size: 3rem; margin-bottom: 1rem;">🏦</span>
+                        <h2>Step 1: Verify Cash Balance</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Log into your bank account and verify
+                            the current balance matches exactly.</p>
+
+                        <div class="form-group" style="text-align: left; width: 100%; max-width: 300px;">
+                            <label>Current Bank Balance</label>
+                            <input type="number" id="review-balance-input" step="0.01" class="form-control"
+                                style="font-size: 1.5rem; text-align: center;">
+                        </div>
+                    </div>
+                    <div class="wizard-actions">
+                        <div></div> <!-- Filter spacer -->
+                        <button class="btn btn-primary" onclick="app.reviewNext(1)">Next Step ➜</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Review AR -->
+                <div id="step-2" class="wizard-step">
+                    <div class="wizard-content">
+                        <span style="font-size: 3rem; margin-bottom: 1rem;">💰</span>
+                        <h2>Step 2: Chase Payments</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Review overdue invoices and send
+                            reminders.</p>
+                        <div id="review-ar-list" style="width: 100%; max-height: 300px; overflow-y: auto;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button class="btn" onclick="app.reviewPrev(2)">⬅ Back</button>
+                        <button class="btn btn-primary" onclick="app.reviewNext(2)">Next Step ➜</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Schedule AP -->
+                <div id="step-3" class="wizard-step">
+                    <div class="wizard-content">
+                        <span style="font-size: 3rem; margin-bottom: 1rem;">💸</span>
+                        <h2>Step 3: Plan Payments</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Which bills MUST be paid this week?
+                        </p>
+                        <div id="review-ap-list" style="width: 100%; max-height: 300px; overflow-y: auto;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button class="btn" onclick="app.reviewPrev(3)">⬅ Back</button>
+                        <button class="btn btn-primary" onclick="app.reviewNext(3)">View Forecast ➜</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Forecast Check -->
+                <div id="step-4" class="wizard-step">
+                    <div class="wizard-content">
+                        <span style="font-size: 3rem; margin-bottom: 1rem;">🔮</span>
+                        <h2>Step 4: Forecast Health</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Does your 4-week outlook look safe?
+                        </p>
+                        <div id="review-forecast-preview" style="width: 100%;"></div>
+                        <h3 id="review-health-status" style="margin-top: 1rem;"></h3>
+                    </div>
+                    <div class="wizard-actions">
+                        <button class="btn" onclick="app.reviewPrev(4)">⬅ Back</button>
+                        <button class="btn btn-success" onclick="app.finishReview()">✅ Complete Review</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- DOCS VIEW -->
+        <div id="view-docs" class="view-section hidden">
+            <div class="header">
+                <h1>Process Documentation</h1>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- AR Process -->
+                <div class="card">
+                    <div class="flex-between" style="margin-bottom: 1rem;">
+                        <h3>💰 AR Workflow (Invoicing)</h3>
+                        <span class="badge badge-pending">Daily</span>
+                    </div>
+                    <ul class="process-list">
+                        <li><input type="checkbox" disabled> <strong>Day 0:</strong> Create invoice same day as sale
+                        </li>
+                        <li><input type="checkbox" disabled> <strong>Day 1:</strong> Send invoice within 24 hours</li>
+                        <li><input type="checkbox" disabled> <strong>Day 1:</strong> Log in tracker immediately</li>
+                        <li><input type="checkbox" disabled> <strong>Day 3:</strong> automated reminder sent</li>
+                        <li><input type="checkbox" disabled> <strong>Day 7, 14:</strong> Follow up if unpaid</li>
+                        <li><input type="checkbox" disabled> <strong>Day 30:</strong> Escalate to management</li>
+                    </ul>
+                </div>
+
+                <!-- AP Process -->
+                <div class="card">
+                    <div class="flex-between" style="margin-bottom: 1rem;">
+                        <h3>💸 AP Workflow (Bill Pay)</h3>
+                        <span class="badge badge-pending">Weekly</span>
+                    </div>
+                    <ul class="process-list">
+                        <li><input type="checkbox" disabled> <strong>Step 1:</strong> Enter bill in tracker when
+                            received</li>
+                        <li><input type="checkbox" disabled> <strong>Step 2:</strong> Verify against PO/receipt</li>
+                        <li><input type="checkbox" disabled> <strong>Step 3:</strong> Schedule payment 3 days before due
+                        </li>
+                        <li><input type="checkbox" disabled> <strong>Step 4:</strong> Check cash position before
+                            scheduling</li>
+                        <li><input type="checkbox" disabled> <strong>Step 5:</strong> Mark paid and log date</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODALS -->
+    <div id="modal-overlay" class="modal-overlay hidden" onclick="app.closeModal()"></div>
+
+    <!-- Add Invoice Modal -->
+    <div id="modal-add-invoice" class="modal hidden">
+        <div class="modal-header">
+            <h2>New Invoice</h2>
+            <button class="btn-close" onclick="app.closeModal()">×</button>
+        </div>
+        <form id="form-add-invoice" onsubmit="app.handleAddInvoice(event)">
+            <div class="form-group">
+                <label>Client Name</label>
+                <input type="text" name="client" required placeholder="e.g. Acme Corp">
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" name="amount" required min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Date Sent</label>
+                <input type="date" name="dateSent" required>
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" name="dueDate" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="app.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Invoice</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Add Bill Modal -->
+    <div id="modal-add-bill" class="modal hidden">
+        <div class="modal-header">
+            <h2>Add Bill</h2>
+            <button class="btn-close" onclick="app.closeModal()">×</button>
+        </div>
+        <form id="form-add-bill" onsubmit="app.handleAddBill(event)">
+            <div class="form-group">
+                <label>Vendor Name</label>
+                <input type="text" name="vendor" required placeholder="e.g. AWS">
+            </div>
+            <div class="form-group">
+                <label>Amount Due ($)</label>
+                <input type="number" name="amount" required min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" name="dueDate" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="app.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Bill</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Decision Tool Modal -->
+    <div id="modal-decision" class="modal hidden">
+        <div class="modal-header">
+            <h2>Can we afford it?</h2>
+            <button class="btn-close" onclick="app.closeModal()">×</button>
+        </div>
+        <form id="form-decision" onsubmit="app.handleDecision(event)">
+            <div class="form-group">
+                <label>Proposed Expense Amount ($)</label>
+                <input type="number" name="amount" required min="0" step="0.01" placeholder="e.g. 5000">
+            </div>
+            <div class="card" style="background: var(--light); border: none; margin-bottom: 2rem;">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Impact Analysis:</p>
+                <div id="decision-result" style="font-weight: 500;">
+                    Enter an amount to see impact on runway.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="app.closeModal()">Close</button>
+                <button type="submit" class="btn btn-primary">Simulate</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Edit Cash Modal -->
+    <div id="modal-edit-cash" class="modal hidden">
+        <div class="modal-header">
+            <h2>Update Cash Balance</h2>
+            <button class="btn-close" onclick="app.closeModal()">×</button>
+        </div>
+        <form id="form-edit-cash" onsubmit="app.handleUpdateCash(event)">
+            <div class="form-group">
+                <label>Current Bank Balance ($)</label>
+                <input type="number" name="balance" required min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="app.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Add Template Modal -->
+    <div id="modal-add-template" class="modal hidden">
+        <div class="modal-header">
+            <h2>New Recurring Template</h2>
+            <button class="btn-close" onclick="app.closeModal()">×</button>
+        </div>
+        <form id="form-add-template" onsubmit="app.handleAddTemplate(event)">
+            <div class="form-group">
+                <label>Type</label>
+                <select name="type" required
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    <option value="invoice">Recurring Invoice</option>
+                    <option value="bill">Recurring Bill</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Name/Description</label>
+                <input type="text" name="name" required placeholder="e.g. Monthly Retainer - Client A">
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" name="amount" required min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Frequency</label>
+                <select name="frequency" required
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="startDate" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="app.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Template</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
