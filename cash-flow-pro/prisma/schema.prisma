@@ -1,0 +1,134 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Changed to sqlite for easy local dev
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  users              User[]
+  invoices           Invoice[]
+  bills              Bill[]
+  recurringTemplates RecurringTemplate[]
+  cashSnapshots      CashSnapshot[]
+  activityLog        ActivityLog[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("member")
+  orgId        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  
+  invoicesCreated        Invoice[]           @relation("InvoiceCreator")
+  billsCreated           Bill[]              @relation("BillCreator")
+  templatesCreated       RecurringTemplate[] @relation("TemplateCreator")
+  cashSnapshotsRecorded  CashSnapshot[]
+  activityLog            ActivityLog[]
+  
+  @@index([orgId])
+  @@index([email])
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  orgId         String
+  invoiceNumber String?
+  clientName    String
+  amount        Decimal
+  dateSent      DateTime
+  dueDate       DateTime
+  status        String   @default("sent")
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator      User?        @relation("InvoiceCreator", fields: [createdBy], references: [id])
+  
+  @@index([orgId])
+  @@index([status])
+}
+
+model Bill {
+  id         String   @id @default(uuid())
+  orgId      String
+  billNumber String?
+  vendorName String
+  amount     Decimal
+  dueDate    DateTime
+  priority   String   @default("medium")
+  category   String?
+  status     String   @default("unpaid")
+  createdBy  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator      User?        @relation("BillCreator", fields: [createdBy], references: [id])
+  
+  @@index([orgId])
+  @@index([status])
+}
+
+model RecurringTemplate {
+  id        String   @id @default(uuid())
+  orgId     String
+  type      String
+  name      String
+  amount    Decimal
+  frequency String
+  startDate DateTime
+  active    Boolean  @default(true)
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator      User?        @relation("TemplateCreator", fields: [createdBy], references: [id])
+  
+  @@index([orgId])
+}
+
+model CashSnapshot {
+  id         String   @id @default(uuid())
+  orgId      String
+  balance    Decimal
+  recordedAt DateTime @default(now())
+  recordedBy String?
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  recorder     User?        @relation(fields: [recordedBy], references: [id])
+  
+  @@index([orgId])
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  orgId      String
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  details    String?  // SQLite doesn't support JSON type well in Prisma, using String for compat
+  createdAt  DateTime @default(now())
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+  
+  @@index([orgId])
+}
